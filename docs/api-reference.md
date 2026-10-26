@@ -153,3 +153,8 @@ curl -i -X POST https://YOUR-PROJECT.vercel.app/api/rsvps \
 ```
 
 In Windows PowerShell, use `curl.exe` (not `curl`). Quoting JSON is awkward there, so the browser console method is easier.
+
+
+### 5. Postman (optional)
+
+Follow the [Postman steps in the root README](../README.md#optional-test-directly-with-postman) to send GET and POST requests directly to your deployed API. Use **Body → raw → JSON** for POST, and inspect the response status and JSON. No Supabase key belongs in these requests. Continue using browser DevTools to trace requests made by the frontend.

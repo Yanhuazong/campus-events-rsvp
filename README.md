@@ -65,15 +65,15 @@ Use your existing AI coding tool for changes, inspect the diff, then push to Git
 
 1. With the cloned repository open in VS Code, create an empty GitHub repository under your own account for your working copy. Change the local `origin` remote to your repository URL (`git remote set-url origin YOUR-REPOSITORY-URL`) and push `main` there. Replace the placeholder with your own URL; keep the shared class starter unchanged. Keep `starter/`, `database/`, `docs/`, and `requests/`, including the lockfile. Exclude dependencies, build output, and real environment files.
 2. Sign in to [Vercel](https://vercel.com), add a new project, and import **your** repository. Choose **Next.js**, set **Root Directory = `starter`**, and keep the standard install/build settings. Use a supported Node.js version meeting `>=22` in `starter/package.json`.
-3. **If you connect Supabase while creating the Vercel project, use your own isolated teaching database.** The integration can supply `SUPABASE_URL` and `SUPABASE_SECRET_KEY` automatically. You can skip the manual connection instructions later if those variables are already available to the deployed server. You will still design/create the tables and complete the API and frontend.
+3. **You can connect Supabase while creating your Vercel project. Create a new Supabase project for this activity, or select the one you already created for it.** The integration can supply `SUPABASE_URL` and `SUPABASE_SECRET_KEY` automatically. You can skip the manual connection instructions later if those variables are already available to the deployed server. You will still design/create the tables and complete the API and frontend.
 4. Deploy and wait for **Ready**. Database settings are optional for this initial sample screen. Open the deployed URL and confirm the yellow **Sample data mode** banner, four `[Sample]` events, and a form that does not save yet.
 5. Save your GitHub repository link and Vercel production URL. Check your existing AI coding tool can edit the repository and push to Vercel's production branch (usually `main`). Local Node.js installation is optional.
 
-Use the same isolated Supabase teaching project throughout the activity. If you did not create/connect one in Vercel, create one during the database step below. If setup stalls, ask your instructor or pair with a classmate; a hosted demonstration is available.
+Use the same Supabase project throughout the activity. If you did not create/connect one in Vercel, create one during the database step below. If setup stalls, ask your instructor or pair with a classmate.
 
-### Watch and predict
+### Predict
 
-The instructor submits an RSVP in the finished app and shows the Network request and the new database row.
+Imagine selecting an event, entering a fictional name and email, and clicking **Send RSVP**. Before implementing the request, predict which part of the application handles each responsibility.
 
 ✏️ For each item, write **B** (browser), **S** (Next.js server), or **D** (database):
 
@@ -92,22 +92,22 @@ The app must let people browse events, view one, and RSVP with a name and email,
 
 ✏️ Before you look at `database/schema.sql`, sketch two tables. What columns does each need? How does an RSVP know which event it's for? What should stop duplicate RSVPs?
 
-Then compare your sketch with the shared schema in [database/README.md](#database-design).
+Then compare your sketch with the [Database design section later in this README](#database-design).
 
 ### Create the tables and check the connection (checkpoint 1)
 
-#### Use your own teaching project
+#### Open your Supabase project
 
 If you already created/connected Supabase through Vercel, open **that same project** from Vercel's integration or database resource using **Open in Supabase**. Do not create a second database.
 
-Otherwise, sign in to [Supabase](https://supabase.com/dashboard), create a separate project such as `campus-events-teaching`, choose a nearby region, and wait until it is ready. Save its database password safely; this app uses an API secret key rather than that password. Restore a paused project before proceeding.
+Otherwise, sign in to [Supabase](https://supabase.com/dashboard), create a separate project such as `campus-events`, choose a nearby region, and wait until it is ready. Save its database password safely; this app uses an API secret key rather than that password. Restore a paused project before proceeding.
 
 Use a database with **no real data**: `schema.sql` drops and recreates the exercise tables, and `seed.sql` deletes their existing rows.
 
 #### Create and inspect the tables
 
 1. Open **SQL Editor → New query**, paste all of [database/schema.sql](database/schema.sql), and select **Run**.
-2. Run all of [database/seed.sql](database/seed.sql) in a new query. Confirm any destructive-operation warning only in your isolated teaching project.
+2. Run all of [database/seed.sql](database/seed.sql) in a new query. Confirm any destructive-operation warning only in the project you created for this activity, which should contain no real data.
 3. Open **Table Editor**: `events` should contain four rows and `rsvps` should be empty. Find the primary keys, the `rsvps.event_id` foreign key, and the unique `(event_id, email)` constraint.
 
 The seed dates are 7, 14, 21, and 28 days after the day you run it. Re-running the seed refreshes dates **and clears test RSVPs**.
@@ -161,7 +161,7 @@ At this checkpoint the list and RSVP routes still return `501` until you impleme
 
 ### Test success and failure
 
-Use `requests/campus-events.http` or the browser console snippet in [api-reference.md](docs/api-reference.md#3-browser-devtools-console-works-everywhere). Use the table to check the responses as you test. Notes are optional:
+Use Postman, `requests/campus-events.http`, or the browser console snippet in [api-reference.md](docs/api-reference.md#3-browser-devtools-console-works-everywhere). Use the table to check the responses as you test. Notes are optional:
 
 | Test | What you sent | Expected | Actual status | Error code (if any) |
 |---|---|---|---|---|
@@ -171,6 +171,23 @@ Use `requests/campus-events.http` or the browser console snippet in [api-referen
 | Unknown event | `eventId: 9999` | 404 | | |
 
 Think about this: the form already has `required` and `type="email"`. Why did the server still need to check? (Hint: how did you just send a request without an email?)
+
+#### Optional: test directly with Postman
+
+Postman is useful for sending requests directly to your API, including invalid input the form would normally reject. It is optional; DevTools remains useful for tracing requests made by the frontend.
+
+1. For GET, select **GET**, enter `<your-vercel-url>/api/events`, and select **Send**. Inspect the status and JSON response.
+2. For POST, select **POST** and enter `<your-vercel-url>/api/rsvps`. Choose **Body → raw → JSON**, which sets `Content-Type: application/json`, and enter:
+
+   ```json
+   { "eventId": 2, "name": "Sam Sample", "email": "sam@example.com" }
+   ```
+
+3. Send once for `201`, then again for `409`. Remove `email` for `400`, or change `eventId` to `9999` for `404`. Use the success/failure table above to compare results.
+
+Send these requests to **your Vercel API**, without a Supabase key. Requests sent by Postman appear in Postman; use the app in your browser to inspect frontend requests in DevTools. If Vercel deployment protection returns a sign-in page, use the authenticated browser's DevTools console for these tests.
+
+See [Postman's request-body documentation](https://learning.postman.com/docs/sending-requests/create-requests/parameters/) for raw JSON details.
 
 ### Explain and transfer
 
