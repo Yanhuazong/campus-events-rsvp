@@ -9,8 +9,12 @@
 // TODO 1: Import getSupabase from "@/lib/supabase-server",
 //         PUBLIC_EVENT_COLUMNS and toPublicEvent from "@/lib/events",
 //         and dataResponse and serverErrorResponse from "@/lib/api-response".
-// TODO 2: Add `export const dynamic = "force-dynamic";` so Next.js asks the
-//         database on every request instead of saving a copy at build time.
+// TODO 2: Add `export const dynamic = "force-dynamic";` to explicitly run this
+//         handler at request time, with fresh database reads (no Next.js cache).
+//         GET handlers are already uncached by default in this Next.js version.
+//         Other dynamic values: "auto" (default), "force-static" (cache),
+//         "error" (require static behavior). Keep "force-dynamic" for this activity.
+//         See the root README: "Why force-dynamic?" for the comparison.
 // TODO 3: Inside a try block, select PUBLIC_EVENT_COLUMNS from the "events" table,
 //         ordered by starts_at ascending (earliest first).
 // TODO 4: If Supabase returns an error, throw it so the catch block handles it.

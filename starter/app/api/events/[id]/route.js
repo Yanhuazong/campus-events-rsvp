@@ -11,6 +11,9 @@ import { getSupabase } from "@/lib/supabase-server";
 import { PUBLIC_EVENT_COLUMNS, parseEventId, toPublicEvent } from "@/lib/events";
 import { dataResponse, errorResponse, serverErrorResponse } from "@/lib/api-response";
 
+// Explicitly run this GET at request time without Next.js response/data caching.
+// GET is already uncached by default here; this makes our intent visible.
+// Alternatives: "auto", "force-static", "error". See root README: "Why force-dynamic?".
 export const dynamic = "force-dynamic";
 
 export async function GET(request, { params }) {

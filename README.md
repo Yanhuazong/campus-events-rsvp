@@ -147,6 +147,27 @@ At this checkpoint the list and RSVP routes still return `501` until you impleme
 
 ⭐ *Extension:* use the **Extension** prompt to load details with `GET /api/events/[id]`.
 
+#### Why `force-dynamic`?
+
+The GET route TODO asks you to add this at the top level of `route.js`, outside the handler:
+
+```js
+export const dynamic = "force-dynamic";
+```
+
+This is a Next.js server configuration export. It controls request-time execution and caching; it does not make the browser interface interactive or define the `[id]` URL parameter.
+
+| Value | Meaning |
+|---|---|
+| `"auto"` (default) | Use Next.js's default behavior. In this project's Next.js version, GET Route Handlers are **not cached by default**. |
+| `"force-dynamic"` | Run the route for each request and skip Next.js response/data caching, so the handler reads the database again. We use this to make the request flow explicit. |
+| `"force-static"` | Opt into a cached/static GET response. Useful when data can be reused until revalidation or a new deployment; database changes may not appear immediately. Request-specific APIs such as cookies/headers return empty values. |
+| `"error"` | Require static behavior and raise an error if request-time APIs or uncached data are needed. This is a configuration check, not an instruction to return an HTTP error to the user. |
+
+Keep `"force-dynamic"` for this activity so caching does not complicate tracing a database read. Removing the export would not automatically cache this GET route. POST handlers are not cached and do not need this setting.
+
+These options apply to this project's configuration, which does not enable Cache Components. See the official [Next.js route caching guide](https://nextjs.org/docs/app/guides/caching-without-cache-components#dynamic) and [Route Handlers documentation](https://nextjs.org/docs/app/getting-started/route-handlers#caching).
+
 ### The write flow (POST)
 
 1. **Predict.** Read the TODOs in `app/api/rsvps/route.js` and answer the five questions.
