@@ -8,16 +8,18 @@ Browser -> Next.js API route on Vercel -> Supabase database
 
 Use fictional names and emails only.
 
-## Before class
+## In-class activity
+
+### 1. Create your repository and deploy
 
 1. Create your own GitHub repository from this starter template.
 2. Import your repository into Vercel with **Root Directory = `starter`**.
 3. Deploy without database variables. Confirm Sample data mode, four `[Sample]` events, and a form that does not save yet.
 4. Save your repository and deployed URL. Confirm you can edit/push using your existing AI coding tool and sign in to Supabase.
 
-Follow the [deployment guide](docs/deployment-guide.md) for detailed setup. Complete this initial deployment **before class**; local Node.js setup is optional.
+Follow the [deployment guide](docs/deployment-guide.md) for detailed setup. Complete this initial deployment **at the start of class**; local Node.js setup is optional.
 
-## During class
+### 2. Build the database and request flows
 
 1. Design and create the tables in your own isolated Supabase teaching project.
 2. Set `SUPABASE_URL` and `SUPABASE_SECRET_KEY` as server-side variables in Vercel, then redeploy. Test the provided `/api/events/1` route.

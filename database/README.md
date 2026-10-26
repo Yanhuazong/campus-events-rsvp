@@ -10,7 +10,7 @@ Create a **new, separate Supabase project** just for this class. Do not use a pr
 
 Why a separate project? Our setup script **drops and recreates tables**, and the seed script **deletes all rows**. Students will also be sharing screenshots of their requests. An isolated project means none of that can damage real work.
 
-Free-plan projects are **paused after about a week without activity**. If yours is paused, open it in the dashboard and choose **Restore** before class.
+Free-plan projects are **paused after about a week without activity**. If yours is paused, open it in the dashboard and choose **Restore** during the setup step and wait until it is active.
 
 ## 2. Create the tables
 

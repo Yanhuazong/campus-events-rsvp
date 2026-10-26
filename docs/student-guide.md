@@ -8,23 +8,6 @@ By the end you should be able to explain, for one request, **which code runs in 
 
 ---
 
-## Before class (about 20 minutes)
-
-**Finish the initial Vercel deployment before class.** You do not need to create the tables, implement the API, install Node.js locally, or configure local secrets yet.
-
-1. Create your own GitHub repository from the shared starter and push the project files. Keep the full folder structure.
-2. Import your repository into Vercel, choose Next.js, and set **Root Directory = `starter`**. Deploy without database variables.
-3. Wait for Ready, then open your deployed URL. Confirm the yellow **Sample data mode** banner, four `[Sample]` events, and an RSVP form that says it does not save yet.
-4. Save your repository link and Vercel production URL. Confirm your existing AI coding tool can edit the repository and push changes to the branch Vercel deploys.
-5. Confirm you can sign in to Supabase and create your own isolated teaching project. Do not use real data.
-
-Follow [deployment-guide.md](deployment-guide.md) for detailed instructions, including what to do if your starter repository has a different folder layout. If setup fails, use [troubleshooting.md](troubleshooting.md) and contact your instructor before class; pairing and a hosted demonstration are available.
-
-During class, **Browser → Next.js API route on Vercel → Supabase database** remains our architecture. Connecting Vercel to Supabase only supplies configuration; you will still finish the API routes and frontend calls.
-
----
-
-
 ## Map of the files you'll touch
 
 ```
@@ -43,9 +26,23 @@ Rule of thumb: **`components/` runs in the browser. `app/api/` and `lib/` run on
 
 ## During class
 
+Complete setup and the feature work in class. **Browser → Next.js API route on Vercel → Supabase database** remains our architecture. Connecting Vercel to Supabase supplies configuration; you still complete the routes and frontend.
+
 Use your existing AI coding tool for changes, inspect the diff, then push to GitHub at the checkpoints below. Deployment delay is the main tradeoff: predict responses or trace the code while builds run. Check the latest commit is Ready and test the current production URL, not an older deployment URL. See the [checkpoint table](deployment-guide.md#push-and-verify-at-clear-checkpoints).
 
-### 0–10 min: Watch and predict
+### 0–15 min: Create your repository and deploy (checkpoint 0)
+
+Start setup together in class. Local Node.js installation and local secrets are optional.
+
+1. Create your own GitHub repository from the shared starter and push the project files. Keep the full folder structure.
+2. Import your repository into Vercel, choose Next.js, and set **Root Directory = `starter`**. Deploy without database variables.
+3. Wait for Ready, then open your deployed URL. Confirm the yellow **Sample data mode** banner, four `[Sample]` events, and an RSVP form that says it does not save yet.
+4. Save your repository link and Vercel production URL. Confirm your existing AI coding tool can edit the repository and push changes to the branch Vercel deploys.
+5. Confirm you can sign in to Supabase and create your own isolated teaching project. Do not use real data.
+
+Follow [deployment-guide.md](deployment-guide.md) for detailed instructions. If setup fails, ask your instructor or pair with a classmate; a hosted demonstration is also available.
+
+### 15–20 min: Watch and predict
 
 The instructor submits an RSVP in the finished app and shows the Network request and the new database row.
 
@@ -60,7 +57,7 @@ The instructor submits an RSVP in the finished app and shows the Network request
 | Refusing a second RSVP from the same email | |
 | Showing "RSVP saved. See you there!" | |
 
-### 10–20 min: Design the data
+### 20–27 min: Design the data
 
 The app must let people browse events, view one, and RSVP with a name and email, with no duplicate RSVPs.
 
@@ -68,7 +65,7 @@ The app must let people browse events, view one, and RSVP with a name and email,
 
 Then compare your sketch with the shared schema in [database/README.md](../database/README.md#4-the-design).
 
-### 20–30 min: Set up the database and Vercel connection (checkpoint 1)
+### 27–40 min: Set up the database and Vercel connection (checkpoint 1)
 
 1. In your teaching project, open **SQL Editor**. Run all of `database/schema.sql`, then all of `database/seed.sql`.
 2. Open **Table Editor** and look at both tables. Find:
@@ -82,7 +79,7 @@ Then compare your sketch with the shared schema in [database/README.md](../datab
 
 🔒 Never paste your secret key into chat or show it in a screenshot.
 
-### 30–50 min: The read flow (GET)
+### 40–60 min: The read flow (GET)
 
 1. **Predict.** Open `app/api/events/route.js` and read the TODOs. Answer the five "pause and ask" questions below.
 2. **Generate.** Use the **Stage 2a** prompt from [ai-prompts.md](ai-prompts.md).
@@ -94,7 +91,7 @@ Then compare your sketch with the shared schema in [database/README.md](../datab
 
 ⭐ *Extension:* use the **Extension** prompt to load details with `GET /api/events/[id]`.
 
-### 50–70 min: The write flow (POST)
+### 60–78 min: The write flow (POST)
 
 1. **Predict.** Read the TODOs in `app/api/rsvps/route.js` and answer the five questions.
 2. **Generate.** Use the **Stage 3a** prompt.
@@ -106,7 +103,7 @@ Then compare your sketch with the shared schema in [database/README.md](../datab
    - **Response** tab: `{ "data": { "id": ..., "eventId": ... }, "message": ... }`
 6. In Supabase **Table Editor → rsvps**, find your new row. 📸 *Take screenshot 2 (DevTools only; don't show any keys).*
 
-### 70–82 min: Test success and failure
+### 78–85 min: Test success and failure
 
 Use `requests/campus-events.http` or the browser console snippet in [api-reference.md](api-reference.md#3-browser-devtools-console-works-everywhere). Fill in the table:
 
@@ -119,7 +116,7 @@ Use `requests/campus-events.http` or the browser console snippet in [api-referen
 
 Think about this: the form already has `required` and `type="email"`. Why did the server still need to check? (Hint: how did you just send a request without an email?)
 
-### 82–90 min: Explain and transfer
+### 85–90 min: Explain and transfer
 
 1. Explain one complete request journey to a partner: **frontend → API route → database → response → screen**. Name the file at each step.
 2. Look at your own prototype. Where does it do each job: UI, input validation, database access, and keeping keys secret?
@@ -144,7 +141,7 @@ Keep it short. Use fictional data in everything. Include your GitHub repository 
 
 1. **Screenshot 1:** one GET request in DevTools showing method, URL, status, and response.
 2. **Screenshot 2:** one POST request and its result (status and response; the Supabase row is optional). No keys visible.
-3. **Test-results table:** the table from 70–82 min, with at least one success and one failure.
+3. **Test-results table:** the table from 78–85 min, with at least one success and one failure.
 4. **Trace (4–6 sentences):** follow one request from frontend → API route → database → response. Name the files.
 5. **Transfer (1 sentence):** where are these same responsibilities in your own prototype?
 
