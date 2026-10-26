@@ -1,3 +1,3 @@
 # Student guide
 
-The complete activity and submission instructions are now in the [root README](../README.md).
+The complete ungraded classroom activity is in the [root README](../README.md). No submission is required.

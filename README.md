@@ -1,25 +1,42 @@
-# Campus Events RSVP: classroom guide
+# Tracing Data Flow in a Web Application — Ungraded Activity
 
-In this session you will finish two features in a small campus events app and **trace each request** from the browser, through our API, to the database, and back.
+In this guided activity, we will use a small campus event application to explore how the frontend, API, backend, and database work together.
 
-By the end you should be able to explain, for one request, **which code runs in the browser, which runs on the server, and what the database does**.
+## In class
 
-> 🔒 Use **fictional names and emails only**, like "Alex Example" and `alex@example.com`. Your screenshots will be shared.
+Start by cloning the repository and opening it in VS Code:
 
----
+[Campus Events RSVP Repository](https://github.com/Yanhuazong/campus-events-rsvp)
 
+```bash
+git clone https://github.com/Yanhuazong/campus-events-rsvp.git
+cd campus-events-rsvp
+code .
+```
+
+If the `code` command is unavailable, use **File → Open Folder** in VS Code and select `campus-events-rsvp`.
+
+We will work through the setup together, then:
+
+- Identify the data needed and set up the database.
+- Implement API endpoints and connect them to the frontend.
+- Inspect GET and POST requests using browser DevTools.
+- Test successful and unsuccessful requests.
+- Trace a user action from the interface to the database and back.
+
+AI assistance is welcome. Be prepared to explain what the generated code does and verify its behavior. Use fictional names and email addresses for testing.
 
 ```text
 Browser → Next.js API route on Vercel → Supabase database
 ```
 
-This README contains the complete setup, activity, database explanation, and submission instructions. The supporting files hold coding prompts, the API contract, and troubleshooting.
+This README contains the complete setup, activity, and database explanation. Supporting files hold coding prompts, the API contract, and troubleshooting.
 
-- [Classroom activity](#during-class)
+- [Guided activity](#during-class)
 - [Deployment checkpoints](#push-and-verify-at-clear-checkpoints)
 - [Database design](#database-design)
 - [Permissions and responsibilities](#permissions-and-row-level-security)
-- [What to submit](#what-to-submit)
+- [Submission](#submission)
 - [Optional local development](#optional-local-development)
 
 ## Map of the files you'll touch
@@ -44,9 +61,9 @@ Complete setup and the feature work in class. **Browser → Next.js API route on
 
 Use your existing AI coding tool for changes, inspect the diff, then push to GitHub at the checkpoints below. Deployment delay is the main tradeoff: predict responses or trace the code while builds run. Check the latest commit is Ready and test the current production URL, not an older deployment URL. See the [checkpoint table](#push-and-verify-at-clear-checkpoints).
 
-### 0–15 min: Create your repository and deploy (checkpoint 0)
+### Set up your working repository and deploy (checkpoint 0)
 
-1. Create your own GitHub repository from the shared starter (**Use this template** if offered, or copy the project into your own repository). Keep `starter/`, `database/`, `docs/`, and `requests/`. Commit the lockfile, but exclude dependencies, build output, and real environment files.
+1. With the cloned repository open in VS Code, create an empty GitHub repository under your own account for your working copy. Change the local `origin` remote to your repository URL (`git remote set-url origin YOUR-REPOSITORY-URL`) and push `main` there. Replace the placeholder with your own URL; keep the shared class starter unchanged. Keep `starter/`, `database/`, `docs/`, and `requests/`, including the lockfile. Exclude dependencies, build output, and real environment files.
 2. Sign in to [Vercel](https://vercel.com), add a new project, and import **your** repository. Choose **Next.js**, set **Root Directory = `starter`**, and keep the standard install/build settings. Use a supported Node.js version meeting `>=22` in `starter/package.json`.
 3. **If you connect Supabase while creating the Vercel project, use your own isolated teaching database.** The integration can supply `SUPABASE_URL` and `SUPABASE_SECRET_KEY` automatically. You can skip the manual connection instructions later if those variables are already available to the deployed server. You will still design/create the tables and complete the API and frontend.
 4. Deploy and wait for **Ready**. Database settings are optional for this initial sample screen. Open the deployed URL and confirm the yellow **Sample data mode** banner, four `[Sample]` events, and a form that does not save yet.
@@ -54,7 +71,7 @@ Use your existing AI coding tool for changes, inspect the diff, then push to Git
 
 Use the same isolated Supabase teaching project throughout the activity. If you did not create/connect one in Vercel, create one during the database step below. If setup stalls, ask your instructor or pair with a classmate; a hosted demonstration is available.
 
-### 15–20 min: Watch and predict
+### Watch and predict
 
 The instructor submits an RSVP in the finished app and shows the Network request and the new database row.
 
@@ -69,7 +86,7 @@ The instructor submits an RSVP in the finished app and shows the Network request
 | Refusing a second RSVP from the same email | |
 | Showing "RSVP saved. See you there!" | |
 
-### 20–27 min: Design the data
+### Design the data
 
 The app must let people browse events, view one, and RSVP with a name and email, with no duplicate RSVPs.
 
@@ -77,7 +94,7 @@ The app must let people browse events, view one, and RSVP with a name and email,
 
 Then compare your sketch with the shared schema in [database/README.md](#database-design).
 
-### 27–40 min: Create the tables and check the connection (checkpoint 1)
+### Create the tables and check the connection (checkpoint 1)
 
 #### Use your own teaching project
 
@@ -118,19 +135,19 @@ Keep privileged credentials server-side, without `NEXT_PUBLIC_`. Never put them 
 
 At this checkpoint the list and RSVP routes still return `501` until you implement them; the screen still shows sample data. Connecting Supabase supplies configuration, not the missing application code.
 
-### 40–60 min: The read flow (GET)
+### The read flow (GET)
 
 1. **Predict.** Open `app/api/events/route.js` and read the TODOs. Answer the five "pause and ask" questions below.
 2. **Generate.** Use the **Stage 2a** prompt from [ai-prompts.md](docs/ai-prompts.md).
 3. **Inspect.** Compare the AI's code with `app/api/events/[id]/route.js`. Does it use `getSupabase()`? Does it hide database errors?
 4. **Deploy and test (checkpoint 2).** Commit and push Stage 2a to GitHub. Wait for Vercel to show Ready for that commit, then open `<your-vercel-url>/api/events`. Inspect the JSON: you should get 200 with four events. Do this before connecting the frontend.
 5. **Connect the frontend (checkpoint 3).** Use the **Stage 2b** prompt (STUDENT CHANGE 1 in `components/EventsApp.js`). Inspect, commit, and push; wait for the new deployment to be Ready before reloading your deployed app.
-6. **Inspect in DevTools.** Reload the page, press F12, open **Network**, and filter **Fetch/XHR**. Click the `events` request. Look at the **Headers** tab (Request URL, Request Method, Status Code) and the **Response** tab. 📸 *Take screenshot 1.*
+6. **Inspect in DevTools.** Reload the page, press F12, open **Network**, and filter **Fetch/XHR**. Click the `events` request. Look at the **Headers** tab (Request URL, Request Method, Status Code) and the **Response** tab.
 7. **Trace the finished endpoint.** Read `app/api/events/[id]/route.js`. Why does `/api/events/abc` give 400 but `/api/events/9999` give 404?
 
 ⭐ *Extension:* use the **Extension** prompt to load details with `GET /api/events/[id]`.
 
-### 60–78 min: The write flow (POST)
+### The write flow (POST)
 
 1. **Predict.** Read the TODOs in `app/api/rsvps/route.js` and answer the five questions.
 2. **Generate.** Use the **Stage 3a** prompt.
@@ -140,11 +157,11 @@ At this checkpoint the list and RSVP routes still return `501` until you impleme
    - **Payload** tab: the JSON you sent
    - **Headers** tab: method `POST`, status `201`
    - **Response** tab: `{ "data": { "id": ..., "eventId": ... }, "message": ... }`
-6. In Supabase **Table Editor → rsvps**, find your new row. 📸 *Take screenshot 2 (DevTools only; don't show any keys).*
+6. In Supabase **Table Editor → rsvps**, find your new row.
 
-### 78–85 min: Test success and failure
+### Test success and failure
 
-Use `requests/campus-events.http` or the browser console snippet in [api-reference.md](docs/api-reference.md#3-browser-devtools-console-works-everywhere). Fill in the table:
+Use `requests/campus-events.http` or the browser console snippet in [api-reference.md](docs/api-reference.md#3-browser-devtools-console-works-everywhere). Use the table to check the responses as you test. Notes are optional:
 
 | Test | What you sent | Expected | Actual status | Error code (if any) |
 |---|---|---|---|---|
@@ -155,7 +172,7 @@ Use `requests/campus-events.http` or the browser console snippet in [api-referen
 
 Think about this: the form already has `required` and `type="email"`. Why did the server still need to check? (Hint: how did you just send a request without an email?)
 
-### 85–90 min: Explain and transfer
+### Explain and transfer
 
 1. Explain one complete request journey to a partner: **frontend → API route → database → response → screen**. Name the file at each step.
 2. Look at your own prototype. Where does it do each job: UI, input validation, database access, and keeping keys secret?
@@ -174,38 +191,9 @@ Think about this: the form already has `required` and `type="email"`. Why did th
 
 ---
 
-## What to submit
+## Submission
 
-Keep it short. Use fictional data in everything. Include your GitHub repository link and working Vercel URL with the five items below.
-
-1. **Screenshot 1:** one GET request in DevTools showing method, URL, status, and response.
-2. **Screenshot 2:** one POST request and its result (status and response; the Supabase row is optional). No keys visible.
-3. **Test-results table:** the table from 78–85 min, with at least one success and one failure.
-4. **Trace (4–6 sentences):** follow one request from frontend → API route → database → response. Name the files.
-5. **Transfer (1 sentence):** where are these same responsibilities in your own prototype?
-
-### Template
-
-```markdown
-## Screenshots
-1. GET: (image)
-2. POST: (image)
-
-## Test results
-| Test | Expected | Actual | Code |
-|---|---|---|---|
-| Valid RSVP | 201 | | |
-| Missing email | 400 | | |
-
-## Trace
-When I ..., the browser code in components/EventsApp.js sends ...
-
-## My prototype
-In my prototype, ...
-```
-
-Stuck? See [troubleshooting.md](docs/troubleshooting.md), or use the recovery path at the bottom of [ai-prompts.md](docs/ai-prompts.md#recovery-path-when-ai-output-differs-or-you-get-stuck).
-
+No submission is required. This activity is ungraded and is intended to support your understanding of application architecture and the API workshop.
 
 ## Push and verify at clear checkpoints
 

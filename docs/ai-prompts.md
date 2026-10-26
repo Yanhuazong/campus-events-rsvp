@@ -37,7 +37,7 @@ If the output is wrong, either ask the AI to fix only that issue, or use the rec
 
 ---
 
-## Stage 1 (27–40 min): Understand the schema (no code changes)
+## Stage 1: Understand the schema (no code changes)
 
 ```text
 Do not change any files. Read ../database/schema.sql (the shared database folder beside starter/).
@@ -52,7 +52,7 @@ Point to the exact lines you are describing.
 
 ---
 
-## Stage 2a (40–50 min): Implement `GET /api/events`
+## Stage 2a: Implement `GET /api/events`
 
 ```text
 Make ONE change in this Next.js App Router project (plain JavaScript):
@@ -81,7 +81,7 @@ what the browser will receive, and what happens if the database fails.
 
 ---
 
-## Stage 2b (50–60 min): Connect the event list to the API
+## Stage 2b: Connect the event list to the API
 
 ```text
 Make ONE change: in components/EventsApp.js, replace the code inside the
@@ -131,7 +131,7 @@ Explain what status codes this endpoint can return and why.
 
 ---
 
-## Stage 3a (60–68 min): Implement `POST /api/rsvps`
+## Stage 3a: Implement `POST /api/rsvps`
 
 ```text
 Make ONE change: implement POST /api/rsvps in app/api/rsvps/route.js by
@@ -165,7 +165,7 @@ why these checks must run on the server even though the form has
 
 ---
 
-## Stage 3b (68–78 min): Connect the RSVP form to the API
+## Stage 3b: Connect the RSVP form to the API
 
 ```text
 Make ONE change: in components/EventsApp.js, replace the code inside the
@@ -188,7 +188,7 @@ Explain what data crosses the network, which file receives it, and where
 the success or error message I see comes from.
 ```
 
-## Stage 3c (cleanup, 1 minute)
+## Stage 3c (cleanup)
 
 ```text
 In components/EventsApp.js, remove only the three items marked
@@ -201,7 +201,7 @@ nothing else.
 
 ---
 
-## Stage 4 (85–90 min): Explain a request journey (no code changes)
+## Stage 4: Explain a request journey (no code changes)
 
 ```text
 Do not change any files. Trace what happens when a user submits the RSVP
@@ -211,7 +211,7 @@ Next.js server, or in the database. Include what happens on a duplicate
 RSVP. Keep it under 12 short steps.
 ```
 
-Use the AI's answer as a **draft to check**, not as your submission. Verify each step against the code and your DevTools screenshots.
+Use the AI's answer as a **draft to check**. Verify each step against the code and the requests in DevTools, then explain the flow in your own words. No submission is required.
 
 ---
 
