@@ -4,7 +4,7 @@ Each prompt below asks for **one bounded change**, names the files, states the c
 
 Use your existing AI coding tool with your own GitHub repository. Keep **Browser → Next.js API route on Vercel → Supabase database**. Connecting Vercel to Supabase supplies configuration only; these prompts finish the routes and frontend. Keep secrets in Vercel server-side variables, never in prompts.
 
-Deploy at checkpoints: **Stage 2a**, then **Stage 2b**, then **Stages 3a–3c together**. Inspect each bounded change before grouping it into a push. See [deployment-guide.md](deployment-guide.md).
+Deploy at checkpoints: **Stage 2a**, then **Stage 2b**, then **Stages 3a–3c together**. Inspect each bounded change before grouping it into a push. See [deployment-guide.md](../README.md).
 
 ## The rhythm for every stage
 

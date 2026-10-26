@@ -1,57 +1,327 @@
-# Campus Events RSVP: student starter
+# Campus Events RSVP: classroom guide
 
-Finish a read feature and an RSVP write feature, then trace each request:
+In this session you will finish two features in a small campus events app and **trace each request** from the browser, through our API, to the database, and back.
+
+By the end you should be able to explain, for one request, **which code runs in the browser, which runs on the server, and what the database does**.
+
+> 🔒 Use **fictional names and emails only**, like "Alex Example" and `alex@example.com`. Your screenshots will be shared.
+
+---
+
 
 ```text
-Browser -> Next.js API route on Vercel -> Supabase database
+Browser → Next.js API route on Vercel → Supabase database
 ```
 
-Use fictional names and emails only.
+This README contains the complete setup, activity, database explanation, and submission instructions. The supporting files hold coding prompts, the API contract, and troubleshooting.
 
-## In-class activity
+- [Classroom activity](#during-class)
+- [Deployment checkpoints](#push-and-verify-at-clear-checkpoints)
+- [Database design](#database-design)
+- [Permissions and responsibilities](#permissions-and-row-level-security)
+- [What to submit](#what-to-submit)
+- [Optional local development](#optional-local-development)
 
-### 1. Create your repository and deploy
+## Map of the files you'll touch
 
-1. Create your own GitHub repository from this starter template.
-2. Import your repository into Vercel with **Root Directory = `starter`**.
-3. Deploy without database variables. Confirm Sample data mode, four `[Sample]` events, and a form that does not save yet.
-4. Save your repository and deployed URL. Confirm you can edit/push using your existing AI coding tool and sign in to Supabase.
+```
+starter/
+├── components/EventsApp.js       BROWSER: fetch() calls (STUDENT CHANGE 1, 2, 3)
+├── app/api/events/route.js       SERVER: GET /api/events       (TODOs, returns 501)
+├── app/api/events/[id]/route.js  SERVER: GET /api/events/[id]  (finished example)
+├── app/api/rsvps/route.js        SERVER: POST /api/rsvps       (TODOs, returns 501)
+├── lib/supabase-server.js        SERVER ONLY: database connection
+└── .env.example                  variable names; set real values in Vercel
+```
 
-Follow the [deployment guide](docs/deployment-guide.md) for detailed setup. Complete this initial deployment **at the start of class**; local Node.js setup is optional.
+Rule of thumb: **`components/` runs in the browser. `app/api/` and `lib/` run on the server.** Only the server talks to Supabase.
 
-### 2. Build the database and request flows
+---
 
-1. Design and create the tables in your own isolated Supabase teaching project.
-2. Set `SUPABASE_URL` and `SUPABASE_SECRET_KEY` as server-side variables in Vercel, then redeploy. Test the provided `/api/events/1` route.
-3. Implement GET `/api/events`, push, wait for Ready, and inspect the deployed JSON before connecting the frontend.
-4. Connect the frontend read flow and deploy it.
-5. Implement POST, connect the form, and remove starter notices in one grouped push; test success, invalid input, and duplicate RSVPs.
+## During class
 
-Connecting Vercel to Supabase supplies configuration only; you still complete the routes and frontend. Never prefix privileged credentials with `NEXT_PUBLIC_` or commit real environment files.
+Complete setup and the feature work in class. **Browser → Next.js API route on Vercel → Supabase database** remains our architecture. Connecting Vercel to Supabase supplies configuration; you still complete the routes and frontend.
 
-## Project files
+Use your existing AI coding tool for changes, inspect the diff, then push to GitHub at the checkpoints below. Deployment delay is the main tradeoff: predict responses or trace the code while builds run. Check the latest commit is Ready and test the current production URL, not an older deployment URL. See the [checkpoint table](#push-and-verify-at-clear-checkpoints).
 
-| Path | Purpose |
+### 0–15 min: Create your repository and deploy (checkpoint 0)
+
+1. Create your own GitHub repository from the shared starter (**Use this template** if offered, or copy the project into your own repository). Keep `starter/`, `database/`, `docs/`, and `requests/`. Commit the lockfile, but exclude dependencies, build output, and real environment files.
+2. Sign in to [Vercel](https://vercel.com), add a new project, and import **your** repository. Choose **Next.js**, set **Root Directory = `starter`**, and keep the standard install/build settings. Use a supported Node.js version meeting `>=22` in `starter/package.json`.
+3. **If you connect Supabase while creating the Vercel project, use your own isolated teaching database.** The integration can supply `SUPABASE_URL` and `SUPABASE_SECRET_KEY` automatically. You can skip the manual connection instructions later if those variables are already available to the deployed server. You will still design/create the tables and complete the API and frontend.
+4. Deploy and wait for **Ready**. Database settings are optional for this initial sample screen. Open the deployed URL and confirm the yellow **Sample data mode** banner, four `[Sample]` events, and a form that does not save yet.
+5. Save your GitHub repository link and Vercel production URL. Check your existing AI coding tool can edit the repository and push to Vercel's production branch (usually `main`). Local Node.js installation is optional.
+
+Use the same isolated Supabase teaching project throughout the activity. If you did not create/connect one in Vercel, create one during the database step below. If setup stalls, ask your instructor or pair with a classmate; a hosted demonstration is available.
+
+### 15–20 min: Watch and predict
+
+The instructor submits an RSVP in the finished app and shows the Network request and the new database row.
+
+✏️ For each item, write **B** (browser), **S** (Next.js server), or **D** (database):
+
+| | B / S / D |
 |---|---|
-| [starter/](starter/) | Next.js app with sample data, unfinished GET/POST routes, and marked frontend changes |
-| [database/](database/) | Schema, seed data, and [Supabase setup](database/README.md) |
-| [docs/student-guide.md](docs/student-guide.md) | Activity and submission instructions |
-| [docs/deployment-guide.md](docs/deployment-guide.md) | Vercel setup and push checkpoints |
-| [docs/ai-prompts.md](docs/ai-prompts.md) | Bounded prompts and recovery guidance |
-| [docs/api-reference.md](docs/api-reference.md) | Endpoint contracts and deployed request tests |
-| [docs/troubleshooting.md](docs/troubleshooting.md) | Deployment, environment, and API fixes |
-| [requests/campus-events.http](requests/campus-events.http) | Example requests; set the base URL to your Vercel app |
+| The form fields and the "Send RSVP" button | |
+| `fetch("/api/rsvps", { method: "POST", ... })` | |
+| Checking that the email looks valid (the trustworthy check) | |
+| The secret Supabase key | |
+| Refusing a second RSVP from the same email | |
+| Showing "RSVP saved. See you there!" | |
 
-Open `starter/` in your AI coding tool for the coding stages. The completed reference is held by your instructor; ask for a hint or stage-specific recovery file if needed.
+### 20–27 min: Design the data
+
+The app must let people browse events, view one, and RSVP with a name and email, with no duplicate RSVPs.
+
+✏️ Before you look at `database/schema.sql`, sketch two tables. What columns does each need? How does an RSVP know which event it's for? What should stop duplicate RSVPs?
+
+Then compare your sketch with the shared schema in [database/README.md](#database-design).
+
+### 27–40 min: Create the tables and check the connection (checkpoint 1)
+
+#### Use your own teaching project
+
+If you already created/connected Supabase through Vercel, open **that same project** from Vercel's integration or database resource using **Open in Supabase**. Do not create a second database.
+
+Otherwise, sign in to [Supabase](https://supabase.com/dashboard), create a separate project such as `campus-events-teaching`, choose a nearby region, and wait until it is ready. Save its database password safely; this app uses an API secret key rather than that password. Restore a paused project before proceeding.
+
+Use a database with **no real data**: `schema.sql` drops and recreates the exercise tables, and `seed.sql` deletes their existing rows.
+
+#### Create and inspect the tables
+
+1. Open **SQL Editor → New query**, paste all of [database/schema.sql](database/schema.sql), and select **Run**.
+2. Run all of [database/seed.sql](database/seed.sql) in a new query. Confirm any destructive-operation warning only in your isolated teaching project.
+3. Open **Table Editor**: `events` should contain four rows and `rsvps` should be empty. Find the primary keys, the `rsvps.event_id` foreign key, and the unique `(event_id, email)` constraint.
+
+The seed dates are 7, 14, 21, and 28 days after the day you run it. Re-running the seed refreshes dates **and clears test RSVPs**.
+
+#### Check the existing connection
+
+**Already connected Supabase during Vercel setup? Skip the manual connection below.** In Vercel → project → **Settings → Environment Variables**, simply verify that `SUPABASE_URL` and `SUPABASE_SECRET_KEY` exist for **Production** (and Preview if you test branch deployments), and correspond to the project where you just created tables. Do not copy or add them again if already present.
+
+Open `<your-vercel-url>/api/events/1`. The provided route should return `200` with `{ "data": { ... } }`. If it works, continue directly to the GET activity. Creating tables alone does not require a Vercel redeployment.
+
+#### Manual connection — only if needed
+
+If you did not connect Supabase during setup, connect the integration now, or add the following in Vercel → **Settings → Environment Variables**:
+
+| Server variable | Where to find its value in Supabase |
+|---|---|
+| `SUPABASE_URL` | **Connect** or **Project Settings → Data API**: Project URL (`https://<project-ref>.supabase.co`) |
+| `SUPABASE_SECRET_KEY` | **Project Settings → API Keys**: Secret key (`sb_secret_...`), or legacy `service_role` key |
+
+These exact names are read by `starter/lib/supabase-server.js`. If an integration used other names or omitted a value, add the missing name explicitly. A connection string or publishable/anon key does not replace the secret key in this exercise.
+
+Apply the variables to **Production**, plus **Preview** if needed. After adding/changing variables, **redeploy**, wait for Ready, and retry `/api/events/1`. Existing deployments retain their original settings; refreshing an old deployment is not enough.
+
+Keep privileged credentials server-side, without `NEXT_PUBLIC_`. Never put them in browser code, GitHub, AI prompts, or screenshots. If a key leaks, revoke/rotate it, update Vercel, and redeploy.
+
+At this checkpoint the list and RSVP routes still return `501` until you implement them; the screen still shows sample data. Connecting Supabase supplies configuration, not the missing application code.
+
+### 40–60 min: The read flow (GET)
+
+1. **Predict.** Open `app/api/events/route.js` and read the TODOs. Answer the five "pause and ask" questions below.
+2. **Generate.** Use the **Stage 2a** prompt from [ai-prompts.md](docs/ai-prompts.md).
+3. **Inspect.** Compare the AI's code with `app/api/events/[id]/route.js`. Does it use `getSupabase()`? Does it hide database errors?
+4. **Deploy and test (checkpoint 2).** Commit and push Stage 2a to GitHub. Wait for Vercel to show Ready for that commit, then open `<your-vercel-url>/api/events`. Inspect the JSON: you should get 200 with four events. Do this before connecting the frontend.
+5. **Connect the frontend (checkpoint 3).** Use the **Stage 2b** prompt (STUDENT CHANGE 1 in `components/EventsApp.js`). Inspect, commit, and push; wait for the new deployment to be Ready before reloading your deployed app.
+6. **Inspect in DevTools.** Reload the page, press F12, open **Network**, and filter **Fetch/XHR**. Click the `events` request. Look at the **Headers** tab (Request URL, Request Method, Status Code) and the **Response** tab. 📸 *Take screenshot 1.*
+7. **Trace the finished endpoint.** Read `app/api/events/[id]/route.js`. Why does `/api/events/abc` give 400 but `/api/events/9999` give 404?
+
+⭐ *Extension:* use the **Extension** prompt to load details with `GET /api/events/[id]`.
+
+### 60–78 min: The write flow (POST)
+
+1. **Predict.** Read the TODOs in `app/api/rsvps/route.js` and answer the five questions.
+2. **Generate.** Use the **Stage 3a** prompt.
+3. **Inspect.** Find each server-side check: JSON, eventId, name, email, length, format, event exists, duplicate.
+4. **Connect the form.** Use the **Stage 3b** prompt (STUDENT CHANGE 2), then **3c** to remove the sample-mode notices.
+5. **Deploy the POST flow (checkpoint 4).** Group Stages 3a, 3b, and 3c into one commit/push. Wait for Ready for that commit. **Submit fictional data** in your deployed form. In DevTools, click the `rsvps` request:
+   - **Payload** tab: the JSON you sent
+   - **Headers** tab: method `POST`, status `201`
+   - **Response** tab: `{ "data": { "id": ..., "eventId": ... }, "message": ... }`
+6. In Supabase **Table Editor → rsvps**, find your new row. 📸 *Take screenshot 2 (DevTools only; don't show any keys).*
+
+### 78–85 min: Test success and failure
+
+Use `requests/campus-events.http` or the browser console snippet in [api-reference.md](docs/api-reference.md#3-browser-devtools-console-works-everywhere). Fill in the table:
+
+| Test | What you sent | Expected | Actual status | Error code (if any) |
+|---|---|---|---|---|
+| Valid RSVP | event 2, new fictional email | 201 | | |
+| Missing email (sent directly to the API) | no `email` field | 400 | | |
+| Duplicate RSVP | same event + same email again | 409 | | |
+| Unknown event | `eventId: 9999` | 404 | | |
+
+Think about this: the form already has `required` and `type="email"`. Why did the server still need to check? (Hint: how did you just send a request without an email?)
+
+### 85–90 min: Explain and transfer
+
+1. Explain one complete request journey to a partner: **frontend → API route → database → response → screen**. Name the file at each step.
+2. Look at your own prototype. Where does it do each job: UI, input validation, database access, and keeping keys secret?
+
+   Your prototype might call Supabase directly from components, or use Server Actions, so its files may look different. The **responsibilities** are the same even when the file structure isn't.
+
+---
+
+## Pause and ask (before running any generated code)
+
+- **Which endpoint** will receive this?
+- **What method** does it use?
+- **What data** will cross the network?
+- **What code checks** the input?
+- **What happens if the database operation fails?**
+
+---
+
+## What to submit
+
+Keep it short. Use fictional data in everything. Include your GitHub repository link and working Vercel URL with the five items below.
+
+1. **Screenshot 1:** one GET request in DevTools showing method, URL, status, and response.
+2. **Screenshot 2:** one POST request and its result (status and response; the Supabase row is optional). No keys visible.
+3. **Test-results table:** the table from 78–85 min, with at least one success and one failure.
+4. **Trace (4–6 sentences):** follow one request from frontend → API route → database → response. Name the files.
+5. **Transfer (1 sentence):** where are these same responsibilities in your own prototype?
+
+### Template
+
+```markdown
+## Screenshots
+1. GET: (image)
+2. POST: (image)
+
+## Test results
+| Test | Expected | Actual | Code |
+|---|---|---|---|
+| Valid RSVP | 201 | | |
+| Missing email | 400 | | |
+
+## Trace
+When I ..., the browser code in components/EventsApp.js sends ...
+
+## My prototype
+In my prototype, ...
+```
+
+Stuck? See [troubleshooting.md](docs/troubleshooting.md), or use the recovery path at the bottom of [ai-prompts.md](docs/ai-prompts.md#recovery-path-when-ai-output-differs-or-you-get-stuck).
+
+
+## Push and verify at clear checkpoints
+
+Use your existing AI coding tool to make and inspect the bounded changes in [ai-prompts.md](docs/ai-prompts.md), then commit and push to the GitHub branch Vercel deploys. Each push triggers a deployment. Wait for **Ready** and check that the deployment shows your latest commit before testing. Use the current production URL consistently; a previous deployment's unique URL continues to show its older code/configuration.
+
+| Checkpoint | Group these changes | Verify on Vercel |
+|---|---|---|
+| 0: classroom setup | Unmodified starter | Sample data mode loads |
+| 1: database connection | Tables/seed in Supabase; verify existing connection, or configure/redeploy if needed | `/api/events/1` returns one event |
+| 2: GET endpoint | Stage 2a only | Open `/api/events` directly; inspect `200` and JSON **before connecting the frontend** |
+| 3: frontend read | Stage 2b | Reload the app; DevTools shows `GET /api/events`; events lose `[Sample]` |
+| 4: POST flow | Stages 3a, 3b, and 3c together | Form returns `201`, row appears in Supabase, duplicate returns `409`; test invalid input directly too |
+
+Deployment delay is the tradeoff. Inspect code, predict responses, or sketch the request journey while a deployment builds. Group related edits within each checkpoint rather than pushing every small edit. The optional details extension can wait until the core GET and POST flows work.
+
+For POST testing, open DevTools on **your deployed app** and use the relative `fetch()` examples in [api-reference.md](docs/api-reference.md). Set `@baseUrl` in `requests/campus-events.http` to your deployment URL if using a REST client.
+
+
+## Database design
+
+```
+events                               rsvps
+──────────────────────────           ──────────────────────────────
+id          integer  PK  ◄─────┐     id          integer  PK
+title       text                └──── event_id    integer  FK → events.id
+description text                      name        text
+location    text                      email       text
+starts_at   timestamptz                created_at  timestamptz
+created_at  timestamptz                UNIQUE (event_id, email)
+```
+
+One event has many RSVPs, and each RSVP belongs to exactly one event.
+
+### Primary keys (`id`)
+
+Each row gets a number that the database generates (`generated always as identity`). Titles and names can repeat or change, but the `id` never does, so other tables and URLs (like `/api/events/2`) can point at a row reliably.
+
+Note that IDs can have gaps. A failed insert, such as a duplicate RSVP, still uses up a number. That's normal.
+
+### Foreign key (`rsvps.event_id → events.id`)
+
+An RSVP is meaningless without knowing which event it's for, so every RSVP stores the event's `id`. The foreign key makes the database **refuse** an RSVP whose `event_id` doesn't exist (Postgres error `23503`). `on delete cascade` means that deleting an event deletes its RSVPs too, so none are left orphaned.
+
+Our API already checks that the event exists and returns a friendly 404. The foreign key is the backstop. It holds even if someone writes buggy code, or the event is deleted between the check and the insert.
+
+### Unique constraint (`unique (event_id, email)`)
+
+The same email may RSVP to **many events**, but only **once per event**. The database rejects a second row with the same pair (Postgres error `23505`), and the API translates that into `409 Conflict`.
+
+This only works if `Alex@Example.com ` and `alex@example.com` are stored the same way, which is why the API trims and lowercases emails before saving. A `check` constraint in the database also rejects any email that isn't already lowercase and trimmed.
+
+Why not just check for duplicates in JavaScript? Two requests can arrive at almost the same moment, both check "no RSVP yet", and both insert. A database constraint can't be raced like that.
+
+### Check constraints
+
+Length limits on text columns (for example, `name` is 1–100 characters) and the email-shape check repeat the API's rules as a backstop.
+
+## Permissions and Row Level Security
+
+**Access approach:** the app reaches the database **only from the Next.js server**, using the secret key. Supabase maps that key to the `service_role` database role. Browsers have no key at all.
+
+What `schema.sql` does:
+
+| Statement | Effect |
+|---|---|
+| `enable row level security` on both tables, with **no policies** | The `anon` and `authenticated` roles (used by the publishable/anon key and by logged-in Supabase users) see **zero rows** and can insert nothing through Supabase's Data API. |
+| `revoke all ... from anon, authenticated, service_role` | Removes the broad default privileges Supabase gives new tables. Public roles are now blocked twice: by missing privileges **and** by RLS. |
+| `grant select on events to service_role` | The two GET endpoints can read events. |
+| `grant select, insert on rsvps to service_role` | `POST /api/rsvps` can insert, and read back the new row's `id`. It cannot update or delete RSVPs. |
+
+`service_role` **bypasses RLS**, but it still needs these table privileges. Granting only what our three endpoints use is the principle of **least privilege**. If code had a bug that tried to delete RSVPs, the database would refuse.
+
+If a later class adds features, such as cancelling an RSVP, add the matching grant then (for example, `grant delete on rsvps to service_role;`).
+
+## Who enforces what
+
+| Protection | Next.js backend (`app/api/...`) | Database (`schema.sql`) |
+|---|---|---|
+| Body must be valid JSON | ✅ 400 `INVALID_JSON` | n/a |
+| `eventId` is a positive integer; required fields present | ✅ 400 `VALIDATION_ERROR` | ✅ `not null`, integer column type |
+| Trim name/email; lowercase email | ✅ does the normalizing | ✅ `check` rejects un-normalized emails |
+| Length limits and email shape | ✅ friendly 400 messages | ✅ `check` constraints as backstop |
+| Event must exist | ✅ looks it up and returns 404 | ✅ **foreign key** (23503) |
+| One RSVP per email per event | Translates the error into 409 | ✅ **unique constraint** (23505): the real guarantee |
+| Which fields leave the server (no names/emails) | ✅ only selects/returns public columns | n/a |
+| Generic 500s; no SQL or keys in responses | ✅ `serverErrorResponse()` | n/a |
+| Keep the secret key secret | ✅ `server-only`, no `NEXT_PUBLIC_`, Vercel server variables; local `.env.local` git-ignored | n/a |
+| Block direct public access to tables | n/a | ✅ RLS with no policies + revoked privileges |
+| Limit what the server's own role can do | n/a | ✅ grants: select events; select + insert RSVPs |
+
+In this project, the backend is where **rules and friendly errors** live, and the database is where **guarantees** live. Some things only the backend can do, such as choosing which fields to return or writing good error messages. Some things only the database can promise, such as no duplicates even under simultaneous requests. Neither layer trusts the browser.
+
+Not included in this exercise: user accounts, rate limiting, CAPTCHA, or email verification. Any visitor can RSVP with any fictional email. Raise these as discussion points about what a production system would add.
+
 
 ## Optional local development
 
-With Node.js 22 or newer:
+If your coding tool uses a local checkout, you may run `cd starter`, `npm install`, and `npm run dev` with Node.js 22+. Open `http://localhost:3000`. For local database tests only, copy `.env.example` to `.env.local`, fill in the two server variables, and restart the dev server. This file is ignored by Git and is **not** how Vercel receives configuration. Local setup is optional throughout this activity.
 
-```bash
-cd starter
-npm install
-npm run dev
-```
+## Official references
 
-Open `http://localhost:3000`. For local database tests, copy `.env.example` to `.env.local` in `starter/`, fill in your teaching project's values, and restart. Vercel environment settings are separate.
+- [Import and deploy a Git repository](https://vercel.com/docs/git)
+- [Vercel environment variables](https://vercel.com/docs/environment-variables)
+- [Supabase Vercel integration](https://supabase.com/docs/guides/integrations/vercel-marketplace)
+
+
+## Supporting files
+
+| Path | Purpose |
+|---|---|
+| [starter/](starter/) | Student app; open this folder for the coding prompts |
+| [database/schema.sql](database/schema.sql) | Tables, constraints, and permissions |
+| [database/seed.sql](database/seed.sql) | Four fictional events; clears test RSVPs |
+| [docs/ai-prompts.md](docs/ai-prompts.md) | Bounded coding prompts and recovery guidance |
+| [docs/api-reference.md](docs/api-reference.md) | Endpoint contract and request examples |
+| [docs/troubleshooting.md](docs/troubleshooting.md) | Deployment, configuration, and API fixes |
+| [requests/campus-events.http](requests/campus-events.http) | REST client requests; set your deployed base URL |
+
+The completed reference is held by your instructor. Ask for a hint or stage-specific recovery file if needed.
