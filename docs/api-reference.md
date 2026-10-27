@@ -157,4 +157,4 @@ In Windows PowerShell, use `curl.exe` (not `curl`). Quoting JSON is awkward ther
 
 ### 5. Postman (optional)
 
-Follow the [Postman steps in the root README](../README.md#optional-test-directly-with-postman) to send GET and POST requests directly to your deployed API. Use **Body → raw → JSON** for POST, and inspect the response status and JSON. No Supabase key belongs in these requests. Continue using browser DevTools to trace requests made by the frontend.
+Follow the [Postman steps in the root README](../README.md#test-success-and-failure) to send GET and POST requests directly to your deployed API. Use **Body → raw → JSON** for POST, and inspect the response status and JSON. No Supabase key belongs in these requests. Continue using browser DevTools to trace requests made by the frontend.

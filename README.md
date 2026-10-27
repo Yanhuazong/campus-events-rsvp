@@ -182,7 +182,16 @@ These options apply to this project's configuration, which does not enable Cache
 
 ### Test success and failure
 
-Use Postman, `requests/campus-events.http`, or the browser console snippet in [api-reference.md](docs/api-reference.md#3-browser-devtools-console-works-everywhere). Use the table to check the responses as you test. Notes are optional:
+You can use Postman to send requests directly to your API, including invalid input the form would normally reject. Postman is optional.
+
+1. Select **GET**, enter `<your-vercel-url>/api/events`, and select **Send**. Inspect the status and JSON response.
+2. Select **POST** and enter `<your-vercel-url>/api/rsvps`. Choose **Body → raw → JSON**, which sets `Content-Type: application/json`, and enter:
+
+   ```json
+   { "eventId": 2, "name": "Sam Sample", "email": "sam@example.com" }
+   ```
+
+3. Send the request, then change or resend the body to try each case below. Start with a fictional email you have not used for that event. Compare the responses; notes are optional.
 
 | Test | What you sent | Expected | Actual status | Error code (if any) |
 |---|---|---|---|---|
@@ -193,22 +202,9 @@ Use Postman, `requests/campus-events.http`, or the browser console snippet in [a
 
 Think about this: the form already has `required` and `type="email"`. Why did the server still need to check? (Hint: how did you just send a request without an email?)
 
-#### Optional: test directly with Postman
+Send requests to **your Vercel API**, without a Supabase key. Postman shows its own requests; use the app in your browser to trace frontend requests in DevTools.
 
-Postman is useful for sending requests directly to your API, including invalid input the form would normally reject. It is optional; DevTools remains useful for tracing requests made by the frontend.
-
-1. For GET, select **GET**, enter `<your-vercel-url>/api/events`, and select **Send**. Inspect the status and JSON response.
-2. For POST, select **POST** and enter `<your-vercel-url>/api/rsvps`. Choose **Body → raw → JSON**, which sets `Content-Type: application/json`, and enter:
-
-   ```json
-   { "eventId": 2, "name": "Sam Sample", "email": "sam@example.com" }
-   ```
-
-3. Send once for `201`, then again for `409`. Remove `email` for `400`, or change `eventId` to `9999` for `404`. Use the success/failure table above to compare results.
-
-Send these requests to **your Vercel API**, without a Supabase key. Requests sent by Postman appear in Postman; use the app in your browser to inspect frontend requests in DevTools. If Vercel deployment protection returns a sign-in page, use the authenticated browser's DevTools console for these tests.
-
-See [Postman's request-body documentation](https://learning.postman.com/docs/sending-requests/create-requests/parameters/) for raw JSON details.
+**Alternatives:** use `requests/campus-events.http` with your deployed base URL, or the [browser console snippet](docs/api-reference.md#3-browser-devtools-console-works-everywhere). If Vercel deployment protection returns a sign-in page in Postman, use the authenticated browser's console. See [Postman's request-body documentation](https://learning.postman.com/docs/sending-requests/create-requests/parameters/) for raw JSON details.
 
 ### Explain and transfer
 
